@@ -1,58 +1,55 @@
 package com.example.exchangegraph.data
 
 import android.content.ContentResolver
-import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.util.Log
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.withContext
 
-class CurrencyRepository(context: Context) {
+class CurrencyRepository(private val contentResolver: ContentResolver) {
 
-    private val contentResolver: ContentResolver = context.contentResolver
-
-    fun getAllCurrencies(): List<String> {
-        return listOf("USD", "EUR", "JPY", "MXN", "GBP", "CAD") // 🔥 MODIFICA ESTO CON LAS MONEDAS REALES
-    }
-
-    fun getExchangeRatesFlow(): Flow<List<ExchangeRate>> = flow {
-        val rates = getExchangeRates()
-        emit(rates)
-    }
-
-    suspend fun getExchangeRates(): List<ExchangeRate> = withContext(Dispatchers.IO) {
+    fun getExchangeRates(currency: String, startDate: String, endDate: String): List<ExchangeRate> {
         val exchangeRates = mutableListOf<ExchangeRate>()
-        val uri: Uri = Uri.parse("content://com.example.nuevasdivisas.provider/exchange_rates")
+        val uri = Uri.parse("content://com.example.nuevasdivisas.provider/exchange_rates")
 
-        Log.d("CurrencyRepository", "📡 Consultando URI: $uri")
-
-        val cursor: Cursor? = contentResolver.query(uri, null, null, null, null)
+        val cursor: Cursor? = contentResolver.query(
+            uri,
+            null,
+            "currency = ? AND date BETWEEN ? AND ?",
+            arrayOf(currency, startDate, endDate),
+            null
+        )
 
         cursor?.use {
-            Log.d("CurrencyRepository", "📄 Cursor obtenido con ${it.count} registros")
-            if (it.moveToFirst()) {
-                val currencyIndex = it.getColumnIndex("currency")
-                val rateIndex = it.getColumnIndex("rate")
-                val dateIndex = it.getColumnIndex("date")
+            while (it.moveToNext()) {
+                val currency = it.getString(it.getColumnIndexOrThrow("currency"))
+                val rate = it.getDouble(it.getColumnIndexOrThrow("rate"))
+                val date = it.getString(it.getColumnIndexOrThrow("date"))
 
-                while (!it.isAfterLast) {
-                    val currency = it.getString(currencyIndex)
-                    val rate = it.getDouble(rateIndex)
-                    val date = it.getString(dateIndex)
-
-                    exchangeRates.add(ExchangeRate(currency, rate, date))
-                    Log.d("CurrencyRepository", "✅ Moneda: $currency, Tasa: $rate, Fecha: $date")
-
-                    it.moveToNext()
-                }
-            } else {
-                Log.w("CurrencyRepository", "⚠️ Cursor vacío: No se obtuvieron datos")
+                exchangeRates.add(ExchangeRate(currency, rate, date))
             }
-        } ?: Log.e("CurrencyRepository", "❌ Cursor nulo: No se obtuvieron datos")
+        }
 
-        return@withContext exchangeRates
+        Log.d("CurrencyRepository", "📊 Datos obtenidos: $exchangeRates")
+        return exchangeRates
+    }
+
+    // ✅ Función para obtener todas las monedas disponibles en la base de datos
+    fun getAllCurrencies(): List<String> {
+        val currencyList = mutableListOf<String>()
+        val uri = Uri.parse("content://com.example.nuevasdivisas.provider/exchange_rates")
+
+        val cursor: Cursor? = contentResolver.query(uri, arrayOf("currency"), null, null, null)
+
+        cursor?.use {
+            while (it.moveToNext()) {
+                val currency = it.getString(it.getColumnIndexOrThrow("currency"))
+                if (!currencyList.contains(currency)) {
+                    currencyList.add(currency)
+                }
+            }
+        }
+
+        Log.d("CurrencyRepository", "💰 Lista de monedas obtenida: $currencyList")
+        return currencyList
     }
 }

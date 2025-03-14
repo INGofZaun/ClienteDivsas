@@ -1,6 +1,5 @@
 package com.example.exchangegraph.ui.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -14,31 +13,18 @@ fun DropdownMenuComponent(
     updateSelectedCurrency: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf(selectedCurrency) }
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        TextField(
-            value = selectedOption,
-            onValueChange = {},
-            readOnly = true,
-            modifier = Modifier.fillMaxWidth().clickable { expanded = true },
-            label = { Text("Seleccionar Moneda") }
-        )
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Button(onClick = { expanded = true }) {
+            Text(text = selectedCurrency)
+        }
 
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             currencyList.forEach { currency ->
-                DropdownMenuItem(
-                    text = { Text(currency) },
-                    onClick = {
-                        selectedOption = currency
-                        updateSelectedCurrency(currency)
-                        expanded = false
-                    }
-                )
+                DropdownMenuItem(text = { Text(text = currency) }, onClick = {
+                    updateSelectedCurrency(currency)
+                    expanded = false
+                })
             }
         }
     }

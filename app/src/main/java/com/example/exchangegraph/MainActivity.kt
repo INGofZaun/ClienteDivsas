@@ -13,13 +13,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val repository = CurrencyRepository(applicationContext)
-
+        val repository = CurrencyRepository(contentResolver)
         val viewModel = ViewModelProvider(this, CurrencyViewModel.Factory(repository))[CurrencyViewModel::class.java]
 
         setContent {
             ExchangeGraphTheme {
-                CurrencyConverterScreen(viewModel = viewModel, context = applicationContext) // 🔥 PASANDO CONTEXTO
+                CurrencyConverterScreen(viewModel = viewModel)
             }
         }
     }

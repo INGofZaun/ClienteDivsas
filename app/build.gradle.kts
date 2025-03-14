@@ -29,12 +29,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 
     buildFeatures {
@@ -43,45 +43,36 @@ android {
 }
 
 dependencies {
-    // ✅ Jetpack Compose BOM (para gestionar versiones automáticamente)
-    implementation(platform("androidx.compose:compose-bom:2024.03.00"))
+    // ✅ Jetpack Compose BOM (ÚLTIMA VERSIÓN DISPONIBLE)
+    implementation(platform("androidx.compose:compose-bom:2024.04.00"))
 
-    // ✅ Dependencias esenciales de Jetpack Compose
+    // ✅ Dependencias de Jetpack Compose
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.runtime:runtime")
 
     // ✅ ViewModel para Jetpack Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
 
-    // ✅ Foundation (para LazyColumn, Canvas, etc.)
-    implementation("androidx.compose.foundation:foundation")
-
-    // ✅ Runtime para `remember`, `LaunchedEffect`, etc.
-    implementation("androidx.compose.runtime:runtime")
-
-    // ✅ Core de AndroidX y Jetpack Compose
+    // ✅ Core de AndroidX
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+
+    // ✅ Librería de gráficos MPAndroidChart (CORRECTA Y SIN DUPLICADOS)
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+    // ✅ Para manejo de fechas con Kotlin
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 
     // ✅ Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(platform("androidx.compose:compose-bom"))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-    // Librería para gráficas
-    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
-
-    // Para manejo de fechas
-    implementation ("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
-
-    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
-
-    implementation(platform("androidx.compose:compose-bom:2024.03.00"))
-
 }
