@@ -8,17 +8,21 @@ import com.example.exchangegraph.data.CurrencyRepository
 import com.example.exchangegraph.ui.CurrencyConverterScreen
 import com.example.exchangegraph.ui.theme.ExchangeGraphTheme
 import com.example.exchangegraph.viewmodel.CurrencyViewModel
+import com.example.exchangegraph.viewmodel.CurrencyViewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val repository = CurrencyRepository(contentResolver)
-        val viewModel = ViewModelProvider(this, CurrencyViewModel.Factory(repository))[CurrencyViewModel::class.java]
+        val repository = CurrencyRepository(contentResolver) // ✅ Se pasa contentResolver
+        val viewModel = ViewModelProvider(this, CurrencyViewModelFactory(repository))[CurrencyViewModel::class.java]
+
+        val startDate = "2025-03-10"
+        val endDate = "2025-03-13"
 
         setContent {
             ExchangeGraphTheme {
-                CurrencyConverterScreen(viewModel = viewModel)
+                CurrencyConverterScreen(viewModel = viewModel, startDate = startDate, endDate = endDate)
             }
         }
     }

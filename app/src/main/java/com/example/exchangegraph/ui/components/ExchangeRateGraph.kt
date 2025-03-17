@@ -1,17 +1,13 @@
 package com.example.exchangegraph.ui.components
 
-import android.util.Log
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
+import android.util.Log
 import com.example.exchangegraph.data.ExchangeRate
 
 @Composable
@@ -23,30 +19,25 @@ fun ExchangeRateGraph(exchangeRates: List<ExchangeRate>) {
         return
     }
 
-    val scrollState = rememberScrollState()
+    val minRate = exchangeRates.minOf { it.rate }.toFloat()
+    val maxRate = exchangeRates.maxOf { it.rate }.toFloat()
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .horizontalScroll(scrollState)
-            .background(Color.White)
-    ) {
-        Canvas(modifier = Modifier.width(800.dp).height(350.dp)) {
-            for (i in 1 until exchangeRates.size) {
-                val startX = i * 50f
-                val startY = 300f - exchangeRates[i - 1].rate.toFloat() * 10
-                val endX = (i + 1) * 50f
-                val endY = 300f - exchangeRates[i].rate.toFloat() * 10
+    Canvas(modifier = Modifier.fillMaxWidth().height(300.dp)) {
+        val widthStep = size.width / exchangeRates.size.coerceAtLeast(1)
+        val heightScale = if (maxRate != minRate) size.height / (maxRate - minRate) else 1f
 
-                drawLine(
-                    color = Color.Blue,
-                    start = Offset(startX, startY),
-                    end = Offset(endX, endY),
-                    strokeWidth = 5f
-                )
+        for (i in 1 until exchangeRates.size) {
+            val startX = (i - 1) * widthStep
+            val startY = size.height - ((exchangeRates[i - 1].rate - minRate) * heightScale)
+            val endX = i * widthStep
+            val endY = size.height - ((exchangeRates[i].rate - minRate) * heightScale)
 
-                Log.d("ExchangeRateGraph", "📍 Punto en x: $endX, y: $endY, valor: ${exchangeRates[i].rate}")
-            }
+            drawLine(
+                color = Color.Blue,
+                start = Offset(x = startX.toFloat(), y = startY.toFloat()),  // ✅ Conversión correcta
+                end = Offset(x = endX.toFloat(), y = endY.toFloat()),        // ✅ Conversión correcta
+                strokeWidth = 4f
+            )
         }
     }
 }

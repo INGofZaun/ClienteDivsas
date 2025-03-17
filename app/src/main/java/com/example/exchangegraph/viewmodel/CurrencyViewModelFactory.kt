@@ -2,10 +2,9 @@ package com.example.exchangegraph.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.exchangegraph.data.CurrencyRepository // ✅ Agrega esta línea
+import com.example.exchangegraph.data.CurrencyRepository
 
-class CurrencyViewModelFactory(private val repository: CurrencyRepository) :
-    ViewModelProvider.Factory {
+class CurrencyViewModelFactory(private val repository: CurrencyRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(CurrencyViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

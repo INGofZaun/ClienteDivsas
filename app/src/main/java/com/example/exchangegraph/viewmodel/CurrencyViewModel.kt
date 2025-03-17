@@ -15,51 +15,34 @@ class CurrencyViewModel(private val repository: CurrencyRepository) : ViewModel(
     private val _selectedCurrency = MutableStateFlow("USD")
     val selectedCurrency: StateFlow<String> = _selectedCurrency
 
-    private val _selectedStartDate = MutableStateFlow("2025-03-12")
-    val selectedStartDate: StateFlow<String> = _selectedStartDate
-
-    private val _selectedEndDate = MutableStateFlow("2025-03-13")
-    val selectedEndDate: StateFlow<String> = _selectedEndDate
-
     init {
-        fetchExchangeRates()
+        fetchExchangeRates("2025-03-10", "2025-03-13")  // ✅ Valores por defecto
     }
 
-    fun fetchExchangeRates() {
+    fun fetchExchangeRates(startDate: String, endDate: String) {
         val currency = _selectedCurrency.value
-        val startDate = _selectedStartDate.value
-        val endDate = _selectedEndDate.value
 
-        Log.d("CurrencyViewModel", "📡 Obteniendo datos para: $currency ($startDate → $endDate)")
-        val rates = repository.getExchangeRates(currency, startDate, endDate)
-        Log.d("CurrencyViewModel", "📊 Datos filtrados: $rates")
+        Log.d("CurrencyViewModel", "🔄 Solicitando datos para $currency entre $startDate y $endDate")
+
+        val allRates = repository.getExchangeRates(currency, startDate, endDate)
+
+        Log.d("CurrencyViewModel", "🌍 TODOS los datos en el repositorio: $allRates")
+
+        val rates = allRates.filter { it.currency == currency }
+
+        Log.d("CurrencyViewModel", "📊 Datos filtrados para $currency: $rates")
+
         _filteredExchangeRates.value = rates
     }
 
     fun getAllCurrencies(): List<String> {
-        return repository.getAllCurrencies()
+        return repository.getAllCurrencies()  // ✅ Se asegura de que esta función exista
     }
 
-    fun setSelectedCurrency(currency: String) {
+    fun setSelectedCurrency(currency: String, startDate: String, endDate: String) {
+        Log.d("CurrencyViewModel", "🔄 Cambio de divisa a: $currency, Fecha Inicio: $startDate, Fecha Fin: $endDate")
+
         _selectedCurrency.value = currency
-        fetchExchangeRates()
-    }
-
-    fun setStartDate(date: String) {
-        _selectedStartDate.value = date
-    }
-
-    fun setEndDate(date: String) {
-        _selectedEndDate.value = date
-    }
-
-    class Factory(private val repository: CurrencyRepository) : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(CurrencyViewModel::class.java)) {
-                @Suppress("UNCHECKED_CAST")
-                return CurrencyViewModel(repository) as T
-            }
-            throw IllegalArgumentException("Unknown ViewModel class")
-        }
+        fetchExchangeRates(startDate, endDate)
     }
 }

@@ -1,8 +1,8 @@
 package com.example.exchangegraph.ui.components
 
-import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
@@ -21,7 +21,7 @@ fun DropdownMenuComponent(
 
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             currencyList.forEach { currency ->
-                DropdownMenuItem(text = { Text(text = currency) }, onClick = {
+                DropdownMenuItem(text = { Text(currency) }, onClick = {
                     updateSelectedCurrency(currency)
                     expanded = false
                 })
