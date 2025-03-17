@@ -21,10 +21,13 @@ fun DropdownMenuComponent(
 
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             currencyList.forEach { currency ->
-                DropdownMenuItem(text = { Text(currency) }, onClick = {
-                    updateSelectedCurrency(currency)
-                    expanded = false
-                })
+                DropdownMenuItem(
+                    text = { Text(currency) },
+                    onClick = {
+                        updateSelectedCurrency(currency)
+                        expanded = false
+                    }
+                )
             }
         }
     }

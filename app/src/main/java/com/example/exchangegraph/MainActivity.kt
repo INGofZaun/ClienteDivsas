@@ -14,15 +14,20 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val repository = CurrencyRepository(contentResolver) // ✅ Se pasa contentResolver
+        val repository = CurrencyRepository(contentResolver)
         val viewModel = ViewModelProvider(this, CurrencyViewModelFactory(repository))[CurrencyViewModel::class.java]
 
-        val startDate = "2025-03-10"
-        val endDate = "2025-03-13"
+        // Define fechas de ejemplo (puedes cambiarlas según lo necesites)
+        val initialStartDate = "2025-03-10"
+        val initialEndDate = "2025-03-16"
 
         setContent {
             ExchangeGraphTheme {
-                CurrencyConverterScreen(viewModel = viewModel, startDate = startDate, endDate = endDate)
+                CurrencyConverterScreen(
+                    viewModel = viewModel,
+                    initialStartDate = initialStartDate,
+                    initialEndDate = initialEndDate
+                )
             }
         }
     }

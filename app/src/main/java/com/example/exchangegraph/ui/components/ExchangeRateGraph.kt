@@ -1,7 +1,8 @@
 package com.example.exchangegraph.ui.components
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -19,23 +20,27 @@ fun ExchangeRateGraph(exchangeRates: List<ExchangeRate>) {
         return
     }
 
+    // Determinar el mínimo y máximo de tasas para escalar el gráfico
     val minRate = exchangeRates.minOf { it.rate }.toFloat()
     val maxRate = exchangeRates.maxOf { it.rate }.toFloat()
 
     Canvas(modifier = Modifier.fillMaxWidth().height(300.dp)) {
+        // Dividir el ancho disponible entre el número de puntos
         val widthStep = size.width / exchangeRates.size.coerceAtLeast(1)
+        // Escalar la altura en función de los valores
         val heightScale = if (maxRate != minRate) size.height / (maxRate - minRate) else 1f
 
+        // Dibujar líneas entre cada punto
         for (i in 1 until exchangeRates.size) {
             val startX = (i - 1) * widthStep
-            val startY = size.height - ((exchangeRates[i - 1].rate - minRate) * heightScale)
+            val startY = size.height - ((exchangeRates[i - 1].rate.toFloat() - minRate) * heightScale)
             val endX = i * widthStep
-            val endY = size.height - ((exchangeRates[i].rate - minRate) * heightScale)
+            val endY = size.height - ((exchangeRates[i].rate.toFloat() - minRate) * heightScale)
 
             drawLine(
                 color = Color.Blue,
-                start = Offset(x = startX.toFloat(), y = startY.toFloat()),  // ✅ Conversión correcta
-                end = Offset(x = endX.toFloat(), y = endY.toFloat()),        // ✅ Conversión correcta
+                start = Offset(x = startX, y = startY),
+                end = Offset(x = endX, y = endY),
                 strokeWidth = 4f
             )
         }
